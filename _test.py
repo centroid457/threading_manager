@@ -22,23 +22,21 @@ class Test:
             time.sleep(1)
             return num
 
-        for i in range(10):
+        for i in range(20):
             assert func(i) is None
 
         ThreadsManager.threads_wait_all()
 
-        assert len(ThreadsManager._threads) == 10
+        assert len(ThreadsManager._threads) == 20
 
         for item in ThreadsManager._threads:
-            assert item.alive is False
-    def test__Class(self):
-        class Cls(ThreadsManager):
-            pass
+            assert item.is_alive() is False
 
-        assert True
+    def test__Class(self):
+        pass
 
     def test__multy(self):
-        assert True
+        pass
 
 
 # =====================================================================================================================
