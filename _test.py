@@ -19,11 +19,15 @@ class Test:
     def test__noClass(self):
         @ThreadsManager().decorator__thread_new
         def func(num):
-            time.sleep(1)
+            time.sleep(2)
             return num
 
+        # start all
         for i in range(10):
             assert func(i) is None
+
+        for item in ThreadsManager._threads:
+            assert item.is_alive() is False
 
         ThreadsManager.threads_wait_all()
 
@@ -31,6 +35,10 @@ class Test:
 
         for item in ThreadsManager._threads:
             assert item.is_alive() is False
+
+        assert set([item.result for item in ThreadsManager._threads]) == {*range(10)}
+
+
     def test__Class(self):
         class Cls(ThreadsManager):
             pass

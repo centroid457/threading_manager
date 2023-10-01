@@ -30,10 +30,10 @@ class ThreadsManager:
 
     def __init__(self):
         super().__init__()
-        self._mutex = threading.Lock()
+        self.__class__._mutex = threading.Lock()
 
-
-    def decorator__thread_new(self, func):
+    @classmethod
+    def decorator__thread_new(cls, func):
         def func__apply_result_to_manager(*args, **kwargs):
             result = None
             try:
@@ -41,8 +41,8 @@ class ThreadsManager:
             except Exception as exx:
                 msg = f"{exx!r}"
                 print(msg)
-                self._thread__apply_exx(exx)
-            self._thread__apply_result(result)
+                cls._thread__apply_exx(exx)
+            cls._thread__apply_result(result)
             return result
 
         def wrapper(*args, **kwargs):
@@ -51,23 +51,26 @@ class ThreadsManager:
             thread_item.args = args
             thread_item.kwargs = kwargs
 
-            self._mutex.acquire()
-            self.__class__._threads.append(thread_item)
-            self._mutex.release()
+            cls._mutex.acquire()
+            cls._threads.append(thread_item)
+            cls._mutex.release()
 
             instance.start()
 
         return wrapper
 
-    def _thread__apply_exx(self, exx: Exception) -> None:
-        self.thread_item_current_get().exx = exx
+    @classmethod
+    def _thread__apply_exx(cls, exx: Exception) -> None:
+        cls.thread_item_current_get().exx = exx
 
-    def _thread__apply_result(self, result: Any) -> None:
-        self.thread_item_current_get().result = result
+    @classmethod
+    def _thread__apply_result(cls, result: Any) -> None:
+        cls.thread_item_current_get().result = result
 
-    def thread_item_current_get(self) -> ThreadItem:
+    @classmethod
+    def thread_item_current_get(cls) -> ThreadItem:
         current_ident = threading.current_thread().ident
-        return list(filter(lambda item: item.INSTANCE.ident == current_ident, self.__class__._threads))[0]
+        return list(filter(lambda item: item.INSTANCE.ident == current_ident, cls._threads))[0]
 
     @classmethod
     def threads_wait_all(cls):
