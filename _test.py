@@ -30,7 +30,7 @@ class Test:
         assert len(ThreadsManager._threads) == 10
 
         for item in ThreadsManager._threads:
-            assert item.alive is False
+            assert item.is_alive() is False
     def test__Class(self):
         class Cls(ThreadsManager):
             pass
