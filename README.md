@@ -19,7 +19,7 @@ See the [HISTORY.md](HISTORY.md) file for release history.
 
 ## Installation
 ```commandline
-pip install threading-manager
+pip install -U threading-manager
 ```
 
 ## Import
