@@ -20,7 +20,7 @@ class Test:
         count = 20
         time_start = time.time()
 
-        @ThreadsManager().decorator__thread_new
+        @ThreadsManager().decorator__thread_start_new
         def func(num):
             time.sleep(1)
             return num
@@ -30,9 +30,9 @@ class Test:
 
         ThreadsManager.threads_wait_all()
 
-        assert len(ThreadsManager._threads) == count
+        assert len(ThreadsManager._thread_items) == count
 
-        for item in ThreadsManager._threads:
+        for item in ThreadsManager._thread_items:
             assert item.is_alive() is False
 
         assert time.time() - time_start < count/2
