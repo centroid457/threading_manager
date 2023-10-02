@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 with open("README.md", "r") as f:
@@ -9,12 +9,12 @@ with open("README.md", "r") as f:
 # EDIT ================================================================================================================
 # EDIT ================================================================================================================
 # EDIT ================================================================================================================
-NAME = "threads_manager"
+NAME = "threading_manager"
 
 setup(
   version="0.0.1",
-  description="________________",
-  keywords=["________________", ],
+  description="manage spawned threads",
+  keywords=["threading", "threads", "thread", "manager"],
   classifiers=[
     # "Topic :: ________________",
 
@@ -32,7 +32,7 @@ setup(
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.11",
     "Operating System :: OS Independent",
-    # "Environment :: Console",
+    "Environment :: Console",
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Typing :: Typed",
