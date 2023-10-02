@@ -5,6 +5,8 @@ import threading
 from uuid import uuid4, UUID
 from pydantic import BaseModel, ConfigDict, Field
 
+from singleton_meta import *
+
 
 # =====================================================================================================================
 
@@ -37,30 +39,58 @@ class ThreadItem(BaseModel):
 
 
 # =====================================================================================================================
-class ThreadsManager:
-    """Manager for spawning threads and keep its instances with additional data
+class ThreadsManager(SingletonWMetaCall):
+    """Manager for spawning threads and keep its instances with additional data.
+    Singleton! do you dont need saving instances!
 
-    :param _thread_items: ThreadItem instances,
-    :param _thread_mutex: mutex for safe collecting threads in this manager, creates in init
-    :param _thread_counter: counter for collected threads in this manager
+    USAGE
+    -----
+    1. BEST PRACTICE
+    Not recommended using it directly, use as simple nested:
+        class ThreadsManager1(ThreadsManager):
+            pass
+
+        @ThreadsManager1.decorator__to_thread
+        def func(*args, **kwargs):
+            pass
+
+    2. Direct usage
+    But if you need only one manager - do use directly.
+        @ThreadsManager.decorator__to_thread
+        def func(*args, **kwargs):
+            pass
+
+    :param name: NAME for manager instance
+    :param thread_items: ThreadItem instances,
+    :param MUTEX: mutex for safe collecting threads in this manager, creates in init
+    :param counter: counter for collected threads in this manager
     """
-    _thread_items: List[ThreadItem] = []
-    _thread_mutex: threading.Lock = None
-    _thread_counter: int = 0
+    # THREAD_ITEMS: List[ThreadItem] = None
+    # MUTEX_THREADS: threading.Lock = None
+    # COUNTER: int = None
 
-    def __init__(self):
-        super().__init__()
-        self._thread_mutex = threading.Lock()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.THREAD_ITEMS = []
+        self.MUTEX_THREADS = threading.Lock()
+        self.COUNTER = 0
 
-    @classmethod
-    def thread_items__clear(cls) -> None:
-        """clear collected _thread_items.
+    @property
+    def NAME(self) -> str:
+        """
+        :return: actual manager NAME, just create new pretty class NAME!
+        """
+        return self.__class__.__name__
+
+    def thread_items__clear(self) -> None:
+        """clear collected thread_items.
 
         useful if you dont need collected items any more after some step. and need to manage new portion.
         """
-        cls._thread_items.clear()
+        self.THREAD_ITEMS.clear()
+        self.COUNTER = 0
 
-    def decorator__thread_start(self, _func) -> Callable:
+    def decorator__to_thread(self, _func) -> Callable:
         """Decorator which start thread from funcs and methods.
 
         :param _func: decorated func
@@ -91,10 +121,10 @@ class ThreadsManager:
             thread_item.args = args
             thread_item.kwargs = kwargs
 
-            self._thread_mutex.acquire()
-            self.__class__._thread_counter += 1
-            self.__class__._thread_items.append(thread_item)
-            self._thread_mutex.release()
+            self.MUTEX_THREADS.acquire()
+            self.COUNTER += 1
+            self.THREAD_ITEMS.append(thread_item)
+            self.MUTEX_THREADS.release()
 
             instance.start()
 
@@ -118,18 +148,18 @@ class ThreadsManager:
         """Get corresponding threadItem in code for current thread
         """
         current_ident = threading.current_thread().ident
-        return list(filter(lambda item: item.INSTANCE.ident == current_ident, self.__class__._thread_items))[0]
+        return list(filter(lambda item: item.INSTANCE.ident == current_ident, self.THREAD_ITEMS))[0]
 
-    @classmethod
-    def threads_wait_all(cls) -> None:
-        """wait while all spawned threads finished
+    def wait_all(self) -> None:
+        """wait while all spawned threads finished.
+
+        if use on
         """
         for _ in range(3):
-            counter = cls._thread_counter
-            if not cls._thread_counter:
+            if not self.COUNTER:
                 time.sleep(1)   # wait all started
 
-            for item in cls._thread_items:
+            for item in self.THREAD_ITEMS:
                 item.INSTANCE.join()
 
             time.sleep(0.1)
