@@ -1,11 +1,12 @@
 # threading_manager
-Designed to working with spawned threads/
+Designed to working with spawned threads.
 
 ## Features
-1. use decorator to spawn threads from func/methods
-2. keep all spawned threads in list by ThreadItem objects
-3. ThreadItem keeps result/exx/is_alive attributes!
-4. use wait_all()
+1. use different managers for different funcs/methods if needed
+2. use just one decorator to spawn threads from func/methods
+3. keep all spawned threads in list by ThreadItem objects 
+4. ThreadItem keeps result/exx/is_alive attributes!
+5. use wait_all()
 
 
 ## License
