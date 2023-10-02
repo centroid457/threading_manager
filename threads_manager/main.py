@@ -11,15 +11,28 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # =====================================================================================================================
 class ThreadItem(BaseModel):
+    """Object for keeping thread data for better managing.
+
+    :param INSTANCE: thread instance,
+    :param args: args passed into thread target,
+    :param kwargs: kwargs passed into thread target,
+    :param result: value from target return, None when thread is_alive or raised,
+    :param exx: exception object (if raised) or None
+    """
     model_config = ConfigDict(arbitrary_types_allowed=True)     # just for Thread!
 
     INSTANCE: threading.Thread
     args: Tuple[Any, ...] = ()
     kwargs: Dict[str, Any] = {}
+
     result: Optional[Any] = None
     exx: Optional[Exception] = None
 
     def is_alive(self) -> Optional[bool]:
+        """Check thread in process state
+
+        :return: bool
+        """
         return self.INSTANCE.is_alive()
 
 
