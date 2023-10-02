@@ -42,15 +42,25 @@ class ThreadsManager:
 
     :param _thread_items: ThreadItem instances,
     :param _thread_mutex: mutex for safe collecting threads in this manager, creates in init
+    :param _thread_counter: counter for collected threads in this manager
     """
     _thread_items: List[ThreadItem] = []
     _thread_mutex: threading.Lock = None
+    _thread_counter: int = 0
 
     def __init__(self):
         super().__init__()
         self._thread_mutex = threading.Lock()
 
-    def decorator__thread_start_new(self, _func) -> Callable:
+    @classmethod
+    def thread_items__clear(cls) -> None:
+        """clear collected _thread_items.
+
+        useful if you dont need collected items any more after some step. and need to manage new portion.
+        """
+        cls._thread_items.clear()
+
+    def decorator__thread_start(self, _func) -> Callable:
         """Decorator which start thread from funcs and methods.
 
         :param _func: decorated func
@@ -82,6 +92,7 @@ class ThreadsManager:
             thread_item.kwargs = kwargs
 
             self._thread_mutex.acquire()
+            self.__class__._thread_counter += 1
             self.__class__._thread_items.append(thread_item)
             self._thread_mutex.release()
 
@@ -94,29 +105,34 @@ class ThreadsManager:
 
         :param exx: raised Exception in thread
         """
-        self.thread_item_current_get().exx = exx
+        self._thread_item_current_get().exx = exx
 
     def _thread__apply_result(self, result: Any) -> None:
         """save result from active thread into corresponding threadItem
 
         :param result: raised Exception in thread
         """
-        self.thread_item_current_get().result = result
+        self._thread_item_current_get().result = result
 
-    def thread_item_current_get(self) -> ThreadItem:
+    def _thread_item_current_get(self) -> ThreadItem:
         """Get corresponding threadItem in code for current thread
         """
         current_ident = threading.current_thread().ident
-        return filter(lambda item: item.INSTANCE.ident == current_ident, self.__class__._thread_items)[0]
+        return list(filter(lambda item: item.INSTANCE.ident == current_ident, self.__class__._thread_items))[0]
 
     @classmethod
     def threads_wait_all(cls) -> None:
         """wait while all spawned threads finished
         """
-        time.sleep(1)   # wait all started
+        for _ in range(3):
+            counter = cls._thread_counter
+            if not cls._thread_counter:
+                time.sleep(1)   # wait all started
 
-        for item in cls._thread_items:
-            item.INSTANCE.join()
+            for item in cls._thread_items:
+                item.INSTANCE.join()
+
+            time.sleep(0.1)
 
 
 # =====================================================================================================================

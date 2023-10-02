@@ -20,7 +20,7 @@ class Test:
         count = 20
         time_start = time.time()
 
-        @ThreadsManager().decorator__thread_start_new
+        @ThreadsManager().decorator__thread_start
         def func(num):
             time.sleep(1)
             return num
