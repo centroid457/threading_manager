@@ -12,7 +12,7 @@ with open("README.md", "r") as f:
 NAME = "threading_manager"
 
 setup(
-  version="0.0.1",
+  version="0.0.2",
   description="manage spawned threads",
   keywords=["threading", "threads", "thread", "manager"],
   classifiers=[
@@ -26,7 +26,7 @@ setup(
 
     # "Framework :: ",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    # "Development Status :: 5 - Production/Stable",
+    "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
