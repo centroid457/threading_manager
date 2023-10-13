@@ -7,6 +7,7 @@ from singleton_meta import *
 
 
 # =====================================================================================================================
+# TODO: add Group threads - in decorator+wait+...
 
 
 # =====================================================================================================================
@@ -29,7 +30,7 @@ class ThreadItem(BaseModel):
     exx: Optional[Exception] = None
 
     def is_alive(self) -> Optional[bool]:
-        """Check thread in process state
+        """Check if thread in process state
 
         :return: bool
         """
@@ -37,7 +38,7 @@ class ThreadItem(BaseModel):
 
 
 # =====================================================================================================================
-class ThreadsManager(SingletonWMetaCall):
+class ThreadsManager(SingletonByCallMeta):
     """Manager for spawning threads and keep its instances with additional data.
     Singleton! do you dont need saving instances!
 
@@ -75,8 +76,7 @@ class ThreadsManager(SingletonWMetaCall):
 
     @property
     def NAME(self) -> str:
-        """
-        :return: actual manager NAME, just create new pretty class NAME!
+        """classname for manager
         """
         return self.__class__.__name__
 
@@ -150,8 +150,6 @@ class ThreadsManager(SingletonWMetaCall):
 
     def wait_all(self) -> None:
         """wait while all spawned threads finished.
-
-        if use on
         """
         for _ in range(3):
             if not self.COUNTER:
