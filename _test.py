@@ -33,8 +33,8 @@ class Test:
         assert ThreadManager1() != ThreadManager2()
         assert ThreadManager1() is not ThreadManager2()
 
-        assert ThreadManager1().COUNTER == 0
-        assert ThreadManager2().COUNTER == 0
+        assert ThreadManager1().count == 0
+        assert ThreadManager2().count == 0
 
         @ThreadManager1().decorator__to_thread
         def func1(num):
@@ -50,14 +50,14 @@ class Test:
         for i in range(count):
             assert func1(i) is None
 
-        assert ThreadManager1().COUNTER == count
-        assert ThreadManager2().COUNTER == 0
+        assert ThreadManager1().count == count
+        assert ThreadManager2().count == 0
 
         for i in range(count):
             assert func2(i) is None
 
-        assert ThreadManager1().COUNTER == count
-        assert ThreadManager2().COUNTER == count
+        assert ThreadManager1().count == count
+        assert ThreadManager2().count == count
 
         # wait ------------------
         ThreadManager1().wait_all()
@@ -91,7 +91,7 @@ class Test:
         for i in range(count):
             assert Cls().func1(i) is None
 
-        assert ThreadManager1().COUNTER == count
+        assert ThreadManager1().count == count
         ThreadManager1().wait_all()
         assert {item.result for item in ThreadManager1().THREAD_ITEMS} == {num * 1000 for num in range(count)}
 
@@ -101,7 +101,7 @@ class Test:
         for i in range(count):
             assert Cls().func1(i) is None
 
-        assert ThreadManager1().COUNTER == count
+        assert ThreadManager1().count == count
         ThreadManager1().wait_all()
         assert {item.result for item in ThreadManager1().THREAD_ITEMS} == {num * 1000 for num in range(count)}
 

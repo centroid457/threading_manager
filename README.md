@@ -30,15 +30,18 @@ from threading_manager import *
 
 ## GUIDE
 See tests and source for other examples.
+
 ```python
 from threading_manager import *
 
 count = 5
 time_start = time.time()
 
+
 # define victim ------------------
 class ThreadManager1(ThreadsManager):
     pass
+
 
 class Cls:
     @ThreadManager1().decorator__to_thread
@@ -46,11 +49,12 @@ class Cls:
         time.sleep(1)
         return num * 1000
 
+
 # spawn ------------------
 for i in range(count):
     assert Cls().func1(i) is None
 
-assert ThreadManager1().COUNTER == count
+assert ThreadManager1().count == count
 ThreadManager1().wait_all()
 assert {item.result for item in ThreadManager1().THREAD_ITEMS} == {num * 1000 for num in range(count)}
 

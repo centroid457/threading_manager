@@ -66,13 +66,11 @@ class ThreadsManager(SingletonByCallMeta):
     """
     # THREAD_ITEMS: List[ThreadItem] = None
     # MUTEX_THREADS: threading.Lock = None
-    # COUNTER: int = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.THREAD_ITEMS = []
         self.MUTEX_THREADS = threading.Lock()
-        self.COUNTER = 0
 
     @property
     def NAME(self) -> str:
@@ -80,13 +78,16 @@ class ThreadsManager(SingletonByCallMeta):
         """
         return self.__class__.__name__
 
+    @property
+    def count(self) -> int:
+        return len(self.THREAD_ITEMS)
+
     def thread_items__clear(self) -> None:
         """clear collected thread_items.
 
         useful if you dont need collected items any more after some step. and need to manage new portion.
         """
         self.THREAD_ITEMS.clear()
-        self.COUNTER = 0
 
     def decorator__to_thread(self, _func) -> Callable:
         """Decorator which start thread from funcs and methods.
@@ -120,7 +121,6 @@ class ThreadsManager(SingletonByCallMeta):
             thread_item.kwargs = kwargs
 
             self.MUTEX_THREADS.acquire()
-            self.COUNTER += 1
             self.THREAD_ITEMS.append(thread_item)
             self.MUTEX_THREADS.release()
 
@@ -152,7 +152,7 @@ class ThreadsManager(SingletonByCallMeta):
         """wait while all spawned threads finished.
         """
         for _ in range(3):
-            if not self.COUNTER:
+            if not self.count:
                 time.sleep(1)   # wait all started
 
             for item in self.THREAD_ITEMS:
