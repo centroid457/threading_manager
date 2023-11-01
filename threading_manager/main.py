@@ -160,15 +160,15 @@ class ThreadsManager(SingletonByCallMeta):
 
             time.sleep(0.1)
 
-    def check_results_all(self, value: Any = True, func_validate: Callable = None) -> bool:
+    def check_results_all(self, value: Any = True, func_validate: Callable[[Any], bool] = None) -> bool:
         """check if result values for all threads are equal to the value
 
-        :param value: expected comparing value for results
+        :param value: expected comparing value for all thread results
         :param func_validate:
         """
         for thread in self.THREAD_ITEMS:
             if func_validate is not None:
-                if func_validate(thread.result) != value:
+                if not func_validate(thread.result):
                     return False
             else:
                 if thread.result != value:

@@ -105,5 +105,60 @@ class Test:
         ThreadManager1().wait_all()
         assert {item.result for item in ThreadManager1().THREAD_ITEMS} == {num * 1000 for num in range(count)}
 
+    def test__check_results_all(self):
+        # define victim ------------------
+        class ThreadManager1(ThreadsManager):
+            pass
+
+        @ThreadManager1().decorator__to_thread
+        def func1(value):
+            return value
+
+        # bool ----------
+        ThreadManager1().thread_items__clear()
+        [func1(True), func1(True)]
+        ThreadManager1().wait_all()
+        assert ThreadManager1().check_results_all() is True
+
+        ThreadManager1().thread_items__clear()
+        [func1(True), func1(False)]
+        ThreadManager1().wait_all()
+        assert ThreadManager1().check_results_all() is False
+
+        ThreadManager1().thread_items__clear()
+        [func1(False), func1(False)]
+        ThreadManager1().wait_all()
+        assert ThreadManager1().check_results_all(False) is True
+
+        # int ----------
+        ThreadManager1().thread_items__clear()
+        [func1(1), func1(1)]
+        ThreadManager1().wait_all()
+        assert ThreadManager1().check_results_all(1) is True
+
+        ThreadManager1().thread_items__clear()
+        [func1(1), func1(2)]
+        ThreadManager1().wait_all()
+        assert ThreadManager1().check_results_all(1) is False
+
+        # func_validate ----------
+        ThreadManager1().thread_items__clear()
+        [func1(0), func1(1)]
+        ThreadManager1().wait_all()
+        assert ThreadManager1().check_results_all(func_validate=bool) is False
+
+        ThreadManager1().thread_items__clear()
+        [func1(1), func1(2)]
+        ThreadManager1().wait_all()
+        assert ThreadManager1().check_results_all(func_validate=bool) is True
+
+        def validate_int(obj: Any) -> bool:
+            return isinstance(obj, int)
+
+        ThreadManager1().thread_items__clear()
+        [func1(0), func1(1)]
+        ThreadManager1().wait_all()
+        assert ThreadManager1().check_results_all(func_validate=validate_int) is True
+
 
 # =====================================================================================================================
