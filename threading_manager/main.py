@@ -8,6 +8,8 @@ from singleton_meta import *
 
 # =====================================================================================================================
 # TODO: add Group threads - in decorator+wait+...
+# TODO: maybe auto clear if decorator get new funcName
+# todo: add parameter in decorator noThread - for run func without thread!
 
 
 # =====================================================================================================================
