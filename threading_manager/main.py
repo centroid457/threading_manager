@@ -9,7 +9,6 @@ from singleton_meta import *
 # =====================================================================================================================
 # TODO: add Group threads - in decorator+wait+...
 # TODO: maybe auto clear if decorator get new funcName
-# todo: add parameter in decorator noThread - for run func without thread!
 
 
 # =====================================================================================================================
@@ -25,6 +24,7 @@ class ThreadItem(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)     # just for Thread!
 
     INSTANCE: threading.Thread
+    func: Callable = None
     args: Tuple[Any, ...] = ()
     kwargs: Dict[str, Any] = {}
 
@@ -61,13 +61,16 @@ class ThreadsManager(SingletonByCallMeta):
         def func(*args, **kwargs):
             pass
 
-    :param name: NAME for manager instance
+    :ivar PARAM__NOTHREAD: parameter for passing in decorated function which can run func without thread
+
+    :param args: NAME for manager instance
     :param thread_items: ThreadItem instances,
     :param MUTEX: mutex for safe collecting threads in this manager, creates in init
     :param counter: counter for collected threads in this manager
     """
     # THREAD_ITEMS: List[ThreadItem] = None
     # MUTEX_THREADS: threading.Lock = None
+    PARAM__NOTHREAD: str = "nothread"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -96,29 +99,17 @@ class ThreadsManager(SingletonByCallMeta):
 
         :param _func: decorated func
         """
-        def func__apply_result_to_manager(*args, **kwargs) -> None:
-            """internal func creates ability to save result/exx from original func into threadItem
-
-            :param args: args passed into func/method,
-            :param kwargs: kwargs passed into func/method,
-            """
-            result = None
-            try:
-                result = _func(*args, **kwargs)
-            except Exception as exx:
-                msg = f"{exx!r}"
-                print(msg)
-                self._thread__apply_exx(exx)
-            self._thread__apply_result(result)
-
-        def _wrapper__spawn_thread(*args, **kwargs) -> None:
+        def _wrapper__spawn_thread(*args, **kwargs) -> Optional[Any]:
             """actual wrapper which spawn thread from decorated func.
 
             :param args: args passed into func/method,
             :param kwargs: kwargs passed into func/method,
             """
-            instance = threading.Thread(target=func__apply_result_to_manager, args=args, kwargs=kwargs)
+            nothread = self.PARAM__NOTHREAD in kwargs and kwargs.pop(self.PARAM__NOTHREAD)
+
+            instance = threading.Thread(target=self._func_execution, kwargs={"func": _func, "args": args, "kwargs": kwargs})
             thread_item = ThreadItem(INSTANCE=instance)
+            thread_item.func = _func
             thread_item.args = args
             thread_item.kwargs = kwargs
 
@@ -126,23 +117,49 @@ class ThreadsManager(SingletonByCallMeta):
             self.THREAD_ITEMS.append(thread_item)
             self.MUTEX_THREADS.release()
 
-            instance.start()
+            if nothread:
+                return _func(*args, **kwargs)
+            else:
+                instance.start()
 
         return _wrapper__spawn_thread
+
+    def _func_execution(self, func, args, kwargs) -> Optional[Any]:
+        """save result/exx from original func into threadItem
+
+        :param func: decorated func,
+        :param args: args passed into func/method,
+        :param kwargs: kwargs passed into func/method,
+        """
+        result = None
+        try:
+            result = func(*args, **kwargs)
+        except Exception as exx:
+            msg = f"{exx!r}"
+            print(msg)
+            self._thread__apply_exx(exx)
+        self._thread__apply_result(result)
+        return result
 
     def _thread__apply_exx(self, exx: Exception) -> None:
         """save exx object from active thread into corresponding threadItem
 
         :param exx: raised Exception in thread
         """
-        self._thread_item_current_get().exx = exx
+        try:
+            self._thread_item_current_get().exx = exx
+        except:
+            pass
 
     def _thread__apply_result(self, result: Any) -> None:
         """save result from active thread into corresponding threadItem
 
         :param result: raised Exception in thread
         """
-        self._thread_item_current_get().result = result
+        try:
+            self._thread_item_current_get().result = result
+        except:
+            pass
 
     def _thread_item_current_get(self) -> ThreadItem:
         """Get corresponding threadItem in code for current thread

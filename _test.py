@@ -160,5 +160,21 @@ class Test:
         ThreadManager1().wait_all()
         assert ThreadManager1().check_results_all(func_validate=validate_int) is True
 
+    def test__PARAM__NOTHREAD(self):
+        # define victim ------------------
+        class ThreadManager1(ThreadsManager):
+            pass
+
+        @ThreadManager1().decorator__to_thread
+        def func1(value):
+            time.sleep(0.2)
+            return value
+
+        # bool ----------
+        ThreadManager1().thread_items__clear()
+
+        assert func1(True, nothread=False) is None
+        assert func1(True, nothread=True) is True
+
 
 # =====================================================================================================================
