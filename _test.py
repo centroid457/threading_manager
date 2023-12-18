@@ -175,6 +175,23 @@ class Test:
 
         assert func1(True, nothread=False) is None
         assert func1(True, nothread=True) is True
+        assert ThreadManager1().count == 2
+
+    def test__AS_FUNC(self):
+        # define victim ------------------
+        class ThreadManager1(ThreadsManager):
+            pass
+
+        def func1(value):
+            time.sleep(0.2)
+            return value
+
+        ThreadManager1().thread_items__clear()
+        thread = ThreadManager1().decorator__to_thread(func1)
+
+        assert thread(True, nothread=False) is None
+        assert thread(True, nothread=True) is True
+        assert ThreadManager1().count == 2
 
 
 # =====================================================================================================================

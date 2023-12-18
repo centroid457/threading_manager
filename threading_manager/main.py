@@ -97,6 +97,8 @@ class ThreadsManager(SingletonByCallMeta):
     def decorator__to_thread(self, _func) -> Callable:
         """Decorator which start thread from funcs and methods.
 
+        always collect objects threads in result object! even if nothread! so you can get results from group!
+
         :param _func: decorated func
         """
         def _wrapper__spawn_thread(*args, **kwargs) -> Optional[Any]:
@@ -117,10 +119,11 @@ class ThreadsManager(SingletonByCallMeta):
             self.THREAD_ITEMS.append(thread_item)
             self.MUTEX_THREADS.release()
 
+            instance.start()
+
             if nothread:
-                return _func(*args, **kwargs)
-            else:
-                instance.start()
+                instance.join()
+                return thread_item.result
 
         return _wrapper__spawn_thread
 
