@@ -1,6 +1,11 @@
 Release History
 ===============
 
+TODOS/WISHES
+------------
+1. add SERIAL execution as method wait_all_piped! paired up with wait_all_parallel() 
+
+
 0.0.5 (2023-12-19)
 -------------------
 - fix nothread
