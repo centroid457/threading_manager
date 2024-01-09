@@ -73,13 +73,13 @@ class Test:
         ThreadManager2().wait_all()
 
         # checks ------------------
-        for item in ThreadManager1().THREAD_ITEMS:
-            assert item.is_alive() is False
+        for item in ThreadManager1().THREADS:
+            assert item.isRunning() is False
 
         assert time.time() - time_start < 5
 
-        assert {item.result for item in ThreadManager1().THREAD_ITEMS} == {num * 10 for num in range(count)}
-        assert {item.result for item in ThreadManager2().THREAD_ITEMS} == {num * 100 for num in range(count)}
+        assert {item.result for item in ThreadManager1().THREADS} == {num * 10 for num in range(count)}
+        assert {item.result for item in ThreadManager2().THREADS} == {num * 100 for num in range(count)}
 
     def test__Class(self):
         # settings ------------------
@@ -102,7 +102,7 @@ class Test:
 
         assert ThreadManager1().count == count
         ThreadManager1().wait_all()
-        assert {item.result for item in ThreadManager1().THREAD_ITEMS} == {num * 1000 for num in range(count)}
+        assert {item.result for item in ThreadManager1().THREADS} == {num * 1000 for num in range(count)}
 
         ThreadManager1().thread_items__clear()
 
@@ -112,7 +112,7 @@ class Test:
 
         assert ThreadManager1().count == count
         ThreadManager1().wait_all()
-        assert {item.result for item in ThreadManager1().THREAD_ITEMS} == {num * 1000 for num in range(count)}
+        assert {item.result for item in ThreadManager1().THREADS} == {num * 1000 for num in range(count)}
 
     def test__check_results_all(self):
         # define victim ------------------

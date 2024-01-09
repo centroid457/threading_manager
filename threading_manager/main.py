@@ -1,8 +1,7 @@
 from typing import *
 import time
-import threading
-from pydantic import BaseModel, ConfigDict, Field
 
+from PyQt5.QtCore import QThread
 from singleton_meta import *
 
 
@@ -20,31 +19,77 @@ from singleton_meta import *
 
 
 # =====================================================================================================================
-class ThreadItem(BaseModel):
+class ThreadItem(QThread):
     """Object for keeping thread data for better managing.
 
-    :param INSTANCE: thread instance,
     :param args: args passed into thread target,
     :param kwargs: kwargs passed into thread target,
     :param result: value from target return, None when thread is_alive or raised,
     :param exx: exception object (if raised) or None
     """
-    model_config = ConfigDict(arbitrary_types_allowed=True)     # just for Thread!
-
-    INSTANCE: threading.Thread
-    func: Callable = None
-    args: Tuple[Any, ...] = ()
-    kwargs: Dict[str, Any] = {}
-
     result: Optional[Any] = None
     exx: Optional[Exception] = None
 
-    def is_alive(self) -> Optional[bool]:
-        """Check if thread in process state
+    def __init__(self, target: Callable, t_args, t_kwargs, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.target: Callable = target
+        self.args: Tuple[Any, ...] = t_args or ()
+        self.kwargs: Dict[str, Any] = t_kwargs or {}
 
-        :return: bool
-        """
-        return self.INSTANCE.is_alive()
+    def run(self):
+        try:
+            self.result = self.target(*self.args, **self.kwargs)
+        except Exception as exx:
+            msg = f"{exx!r}"
+            print(msg)
+            self.exx = exx
+
+    def SLOTS_EXAMPLES(self):
+        # checkers --------------------
+        self.started
+        self.isRunning()
+
+        self.finished
+        self.isFinished()
+
+        self.destroyed
+        self.signalsBlocked()
+
+        # settings --------------------
+        self.setTerminationEnabled()
+
+        # info --------------------
+        self.currentThread()
+        self.currentThreadId()
+        self.priority()
+        self.loopLevel()
+        self.stackSize()
+
+        self.setPriority()
+        self.setProperty()
+        self.setObjectName()
+
+        self.tr()
+
+        # CONTROL --------------------
+        self.run()
+        self.start()
+        self.startTimer()
+
+        self.sleep(100)
+        self.msleep(100)
+        self.usleep(100)
+
+        self.wait()
+
+        self.disconnect()
+        self.deleteLater()
+        self.terminate()
+        self.quit()
+        self.exit(100)
+
+        # WTF --------------------
+        self.thread()
 
 
 # =====================================================================================================================
@@ -69,21 +114,19 @@ class ThreadsManager(SingletonByCallMeta):
         def func(*args, **kwargs):
             pass
 
-    :ivar PARAM__NOTHREAD: parameter for passing in decorated function which can run func without thread
+    :ivar _PARAM__NOTHREAD: parameter for passing in decorated function which can run target without thread
 
     :param args: NAME for manager instance
     :param thread_items: ThreadItem instances,
     :param MUTEX: mutex for safe collecting threads in this manager, creates in init
     :param counter: counter for collected threads in this manager
     """
-    THREAD_ITEMS: List[ThreadItem]
-    # MUTEX_THREADS: threading.Lock = None
-    PARAM__NOTHREAD: str = "nothread"
+    THREADS: List[ThreadItem]
+    _PARAM__NOTHREAD: str = "nothread"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.THREAD_ITEMS = []
-        self.MUTEX_THREADS = threading.Lock()
+        self.THREADS = []
 
     @property
     def NAME(self) -> str:
@@ -93,90 +136,41 @@ class ThreadsManager(SingletonByCallMeta):
 
     @property
     def count(self) -> int:
-        return len(self.THREAD_ITEMS)
+        return len(self.THREADS)
 
-    def thread_items__clear(self) -> None:
-        """clear collected thread_items.
-
-        useful if you dont need collected items any more after some step. and need to manage new portion.
-        """
-        self.THREAD_ITEMS.clear()
-
+    # =================================================================================================================
     def decorator__to_thread(self, _func) -> Callable:
         """Decorator which start thread from funcs and methods.
 
         always collect objects threads in result object! even if nothread! so you can get results from group!
 
-        :param _func: decorated func
+        :param _func: decorated target
         """
         def _wrapper__spawn_thread(*args, **kwargs) -> Optional[Any]:
-            """actual wrapper which spawn thread from decorated func.
+            """actual wrapper which spawn thread from decorated target.
 
-            :param args: args passed into func/method,
-            :param kwargs: kwargs passed into func/method,
+            :param args: args passed into target/method,
+            :param kwargs: kwargs passed into target/method,
             """
-            nothread = self.PARAM__NOTHREAD in kwargs and kwargs.pop(self.PARAM__NOTHREAD)
+            nothread = self._PARAM__NOTHREAD in kwargs and kwargs.pop(self._PARAM__NOTHREAD)
 
-            instance = threading.Thread(target=self._func_execution, kwargs={"func": _func, "args": args, "kwargs": kwargs})
-            thread_item = ThreadItem(INSTANCE=instance)
-            thread_item.func = _func
-            thread_item.args = args
-            thread_item.kwargs = kwargs
-
-            self.MUTEX_THREADS.acquire()
-            self.THREAD_ITEMS.append(thread_item)
-            self.MUTEX_THREADS.release()
-
-            instance.start()
+            thread_item = ThreadItem(target=_func, t_args=args, t_kwargs=kwargs)
+            self.THREADS.append(thread_item)
+            thread_item.start()
 
             if nothread:
-                instance.join()
+                thread_item.wait()
                 return thread_item.result
 
         return _wrapper__spawn_thread
 
-    def _func_execution(self, func, args, kwargs) -> Optional[Any]:
-        """save result/exx from original func into threadItem
+    # =================================================================================================================
+    def thread_items__clear(self) -> None:
+        """clear collected thread_items.
 
-        :param func: decorated func,
-        :param args: args passed into func/method,
-        :param kwargs: kwargs passed into func/method,
+        useful if you dont need collected items any more after some step. and need to manage new portion.
         """
-        result = None
-        try:
-            result = func(*args, **kwargs)
-        except Exception as exx:
-            msg = f"{exx!r}"
-            print(msg)
-            self._thread__apply_exx(exx)
-        self._thread__apply_result(result)
-        return result
-
-    def _thread__apply_exx(self, exx: Exception) -> None:
-        """save exx object from active thread into corresponding threadItem
-
-        :param exx: raised Exception in thread
-        """
-        try:
-            self._thread_item__current_get().exx = exx
-        except:
-            pass
-
-    def _thread__apply_result(self, result: Any) -> None:
-        """save result from active thread into corresponding threadItem
-
-        :param result: raised Exception in thread
-        """
-        try:
-            self._thread_item__current_get().result = result
-        except:
-            pass
-
-    def _thread_item__current_get(self) -> ThreadItem:
-        """Get corresponding threadItem in code for current thread
-        """
-        current_ident = threading.current_thread().ident
-        return list(filter(lambda item: item.INSTANCE.ident == current_ident, self.THREAD_ITEMS))[0]
+        self.THREADS.clear()
 
     def wait_all(self) -> None:
         """wait while all spawned threads finished.
@@ -185,8 +179,8 @@ class ThreadsManager(SingletonByCallMeta):
             if not self.count:
                 time.sleep(1)   # wait all started
 
-            for item in self.THREAD_ITEMS:
-                item.INSTANCE.join()
+            for item in self.THREADS:
+                item.wait()
 
             time.sleep(0.1)
 
@@ -196,7 +190,7 @@ class ThreadsManager(SingletonByCallMeta):
         :param value: expected comparing value for all thread results
         :param func_validate:
         """
-        for thread in self.THREAD_ITEMS:
+        for thread in self.THREADS:
             if func_validate is not None:
                 if not func_validate(thread.result):
                     return False
