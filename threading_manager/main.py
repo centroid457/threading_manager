@@ -13,7 +13,7 @@ from singleton_meta import *
 # TODO: maybe AUTO CLEAR if decorator get new funcName?
 # TODO: add KILL/STOP! switch to Qthread?
 # TODO: TIME item+group
-# TODO: SECOND start - restart or even always generate new thread instance?
+# TODO: SECOND start7 - restart or even always generate new thread instance?
 
 # READY ---------------------------------------------------------------------------------------------------------------
 # 1=SINGLETON
