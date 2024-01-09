@@ -14,6 +14,18 @@ from threading_manager import *
 class Test:
     # VICTIM: Type[ThreadsManager] = type("VICTIM", (ThreadsManager,), {})
 
+    def test__singleton(self):
+        class ThreadManager1(ThreadsManager):
+            pass
+
+        class ThreadManager2(ThreadsManager):
+            pass
+
+        inst1 = ThreadManager1()
+        inst2 = ThreadManager2()
+        assert id(inst1) != id(inst2)
+        assert id(inst1) == id(ThreadManager1())
+
     # -----------------------------------------------------------------------------------------------------------------
     def test__noClass_severalManagers(self):
         # settings ------------------
@@ -27,9 +39,6 @@ class Test:
         class ThreadManager2(ThreadsManager):
             pass
 
-        inst1 = ThreadManager1()
-        inst2 = ThreadManager2()
-        assert id(inst1) != id(inst2)
         assert ThreadManager1() != ThreadManager2()
         assert ThreadManager1() is not ThreadManager2()
 
@@ -178,7 +187,6 @@ class Test:
         assert ThreadManager1().count == 2
 
     def test__AS_FUNC(self):
-        # define victim ------------------
         class ThreadManager1(ThreadsManager):
             pass
 
@@ -192,6 +200,22 @@ class Test:
         assert thread(True, nothread=False) is None
         assert thread(True, nothread=True) is True
         assert ThreadManager1().count == 2
+
+    def _test__twice_execute_7777(self):    # not expected???
+        class ThreadManager1(ThreadsManager):
+            pass
+
+        @ThreadManager1().decorator__to_thread
+        def func1(value):
+            time.sleep(0.2)
+            return value
+
+        ThreadManager1().thread_items__clear()
+
+        assert ThreadManager1().count == 0
+        assert func1(True) is None
+        assert ThreadManager1().count == 1
+        ThreadManager1().wait_all()
 
 
 # =====================================================================================================================

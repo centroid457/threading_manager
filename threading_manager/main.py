@@ -7,8 +7,16 @@ from singleton_meta import *
 
 
 # =====================================================================================================================
-# TODO: add Group threads - in decorator+wait+...
-# TODO: maybe auto clear if decorator get new funcName
+# ISSUES ==============================================================================================================
+# TODOs ---------------------------------------------------------------------------------------------------------------
+# TODO: add GROUP threads - in decorator+wait+...
+# TODO: maybe AUTO CLEAR if decorator get new funcName?
+# TODO: add KILL/STOP! switch to Qthread?
+# TODO: TIME item+group
+# TODO: SECOND start - restart or even always generate new thread instance?
+
+# READY ---------------------------------------------------------------------------------------------------------------
+# 1=SINGLETON
 
 
 # =====================================================================================================================
@@ -68,7 +76,7 @@ class ThreadsManager(SingletonByCallMeta):
     :param MUTEX: mutex for safe collecting threads in this manager, creates in init
     :param counter: counter for collected threads in this manager
     """
-    # THREAD_ITEMS: List[ThreadItem] = None
+    THREAD_ITEMS: List[ThreadItem]
     # MUTEX_THREADS: threading.Lock = None
     PARAM__NOTHREAD: str = "nothread"
 
@@ -150,7 +158,7 @@ class ThreadsManager(SingletonByCallMeta):
         :param exx: raised Exception in thread
         """
         try:
-            self._thread_item_current_get().exx = exx
+            self._thread_item__current_get().exx = exx
         except:
             pass
 
@@ -160,11 +168,11 @@ class ThreadsManager(SingletonByCallMeta):
         :param result: raised Exception in thread
         """
         try:
-            self._thread_item_current_get().result = result
+            self._thread_item__current_get().result = result
         except:
             pass
 
-    def _thread_item_current_get(self) -> ThreadItem:
+    def _thread_item__current_get(self) -> ThreadItem:
         """Get corresponding threadItem in code for current thread
         """
         current_ident = threading.current_thread().ident
