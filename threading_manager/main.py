@@ -47,6 +47,8 @@ class ThreadItem(QThread):
             self.exx = exx
 
     def SLOTS_EXAMPLES(self):
+        """DON'T START! just for explore!
+        """
         # checkers --------------------
         self.started
         self.isRunning()
