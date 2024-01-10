@@ -6,6 +6,9 @@ TODOS/WISHES
 1. add SERIAL execution as method wait_all_piped! paired up with wait_all_parallel() 
 2. add meta cumulative funks
 
+0.0.7 (2024-01-10)
+-------------------
+- add terminate_all
 
 0.0.6 (2024-01-10)
 -------------------
