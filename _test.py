@@ -126,7 +126,7 @@ class Test_Manager:
         ThreadManager1().wait_all()
         assert {item.result for item in ThreadManager1().THREADS} == {num * 1000 for num in range(count)}
 
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
 
         # spawn ------------------
         for i in range(count):
@@ -146,39 +146,39 @@ class Test_Manager:
             return value
 
         # bool ----------
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
         [func1(True), func1(True)]
         ThreadManager1().wait_all()
         assert ThreadManager1().check_results_all() is True
 
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
         [func1(True), func1(False)]
         ThreadManager1().wait_all()
         assert ThreadManager1().check_results_all() is False
 
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
         [func1(False), func1(False)]
         ThreadManager1().wait_all()
         assert ThreadManager1().check_results_all(False) is True
 
         # int ----------
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
         [func1(1), func1(1)]
         ThreadManager1().wait_all()
         assert ThreadManager1().check_results_all(1) is True
 
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
         [func1(1), func1(2)]
         ThreadManager1().wait_all()
         assert ThreadManager1().check_results_all(1) is False
 
         # func_validate ----------
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
         [func1(0), func1(1)]
         ThreadManager1().wait_all()
         assert ThreadManager1().check_results_all(func_validate=bool) is False
 
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
         [func1(1), func1(2)]
         ThreadManager1().wait_all()
         assert ThreadManager1().check_results_all(func_validate=bool) is True
@@ -186,7 +186,7 @@ class Test_Manager:
         def validate_int(obj: Any) -> bool:
             return isinstance(obj, int)
 
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
         [func1(0), func1(1)]
         ThreadManager1().wait_all()
         assert ThreadManager1().check_results_all(func_validate=validate_int) is True
@@ -202,7 +202,7 @@ class Test_Manager:
             return value
 
         # bool ----------
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
 
         assert func1(True, nothread=False) is None
         assert func1(True, nothread=True) is True
@@ -216,7 +216,7 @@ class Test_Manager:
             time.sleep(0.2)
             return value
 
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
         thread = ThreadManager1().decorator__to_thread(func1)
 
         assert thread(True, nothread=False) is None
@@ -232,7 +232,7 @@ class Test_Manager:
             time.sleep(0.2)
             return value
 
-        ThreadManager1().thread_items__clear()
+        ThreadManager1().clear()
 
         assert ThreadManager1().count == 0
         assert func1(True) is None

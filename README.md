@@ -58,7 +58,7 @@ assert ThreadManager1().count == count
 ThreadManager1().wait_all()
 assert {item.result for item in ThreadManager1().THREADS} == {num * 1000 for num in range(count)}
 
-ThreadManager1().thread_items__clear()
+ThreadManager1().clear()
 
 # spawn ------------------
 for i in range(count):

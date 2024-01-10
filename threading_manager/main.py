@@ -126,6 +126,7 @@ class ThreadsManager(SingletonByCallMeta):
     :param counter: counter for collected threads in this manager
     """
     THREADS: List[ThreadItem]
+
     _PARAM__NOTHREAD: str = "nothread"
 
     def __init__(self, *args, **kwargs):
@@ -169,7 +170,7 @@ class ThreadsManager(SingletonByCallMeta):
         return _wrapper__spawn_thread
 
     # =================================================================================================================
-    def thread_items__clear(self) -> None:
+    def clear(self) -> None:
         """clear collected thread_items.
 
         useful if you dont need collected items any more after some step. and need to manage new portion.
@@ -179,14 +180,19 @@ class ThreadsManager(SingletonByCallMeta):
     def wait_all(self) -> None:
         """wait while all spawned threads finished.
         """
-        for _ in range(3):
-            if not self.count:
-                time.sleep(1)   # wait all started
+        # wait all started
+        if not self.count:
+            time.sleep(0.2)
 
+        for _ in range(3):
             for item in self.THREADS:
                 item.wait()
 
             time.sleep(0.1)
+
+    def terminate_all(self) -> None:
+        for thread in self.THREADS:
+            thread.terminate()
 
     def check_results_all(self, value: Any = True, func_validate: Callable[[Any], bool] = None) -> bool:
         """check if result values for all threads are equal to the value
