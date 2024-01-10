@@ -7,11 +7,33 @@ from tempfile import TemporaryDirectory
 from typing import *
 from configparser import ConfigParser
 
+from object_info import ObjectInfo
+
 from threading_manager import *
 
 
 # =====================================================================================================================
-class Test:
+class Test_ThreadItem:
+    # -----------------------------------------------------------------------------------------------------------------
+    def setup_method(self, method):
+        # self.victim = ThreadItem()
+        pass
+
+    # -----------------------------------------------------------------------------------------------------------------
+    def test_SecondaryStart(self):
+        def target():
+            time.sleep(0.2)
+
+        victim = ThreadItem(target=target)
+        victim.start()
+        victim.wait()
+        victim.start()
+        victim.wait()
+        assert True
+
+
+# =====================================================================================================================
+class Test_Manager:
     # VICTIM: Type[ThreadsManager] = type("VICTIM", (ThreadsManager,), {})
 
     def test__singleton(self):

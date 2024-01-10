@@ -10,31 +10,33 @@ from singleton_meta import *
 # TODOs ---------------------------------------------------------------------------------------------------------------
 # TODO: add GROUP threads - in decorator+wait+...
 # TODO: maybe AUTO CLEAR if decorator get new funcName?
-# TODO: add KILL/STOP! switch to Qthread?
 # TODO: TIME item+group
-# TODO: SECOND start7 - restart or even always generate new thread instance?
 
 # READY ---------------------------------------------------------------------------------------------------------------
 # 1=SINGLETON
+# 2=use Qthread=add KILL/STOP +SecondaryStart!
 
 
 # =====================================================================================================================
 class ThreadItem(QThread):
     """Object for keeping thread data for better managing.
-
-    :param args: args passed into thread target,
-    :param kwargs: kwargs passed into thread target,
-    :param result: value from target return, None when thread is_alive or raised,
-    :param exx: exception object (if raised) or None
     """
+    target: Callable
+    args: Tuple[Any, ...]
+    kwargs: Dict[str, Any]
+
     result: Optional[Any] = None
     exx: Optional[Exception] = None
 
-    def __init__(self, target: Callable, t_args, t_kwargs, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.target: Callable = target
-        self.args: Tuple[Any, ...] = t_args or ()
-        self.kwargs: Dict[str, Any] = t_kwargs or {}
+    def __init__(self, target: Callable, args: Union[Tuple, Any, ] = None, kwargs=None, *_args, **_kwargs):
+        super().__init__(*_args, **_kwargs)
+
+        if args and not isinstance(args, (tuple, list, )):
+            args = (args, )
+
+        self.target = target
+        self.args = args or ()
+        self.kwargs = kwargs or {}
 
     def run(self):
         try:
@@ -154,7 +156,7 @@ class ThreadsManager(SingletonByCallMeta):
             """
             nothread = self._PARAM__NOTHREAD in kwargs and kwargs.pop(self._PARAM__NOTHREAD)
 
-            thread_item = ThreadItem(target=_func, t_args=args, t_kwargs=kwargs)
+            thread_item = ThreadItem(target=_func, args=args, kwargs=kwargs)
             self.THREADS.append(thread_item)
             thread_item.start()
 
