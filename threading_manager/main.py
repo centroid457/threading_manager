@@ -59,21 +59,30 @@ class ThreadItem(QThread):
         self.destroyed
         self.signalsBlocked()
 
-        # settings --------------------
+        # settings -------------------
         self.setTerminationEnabled()
 
-        # info --------------------
+        # NESTING --------------------
         self.currentThread()
         self.currentThreadId()
+        self.thread()
+        self.children()
+        self.parent()
+
+        # info --------------------
         self.priority()
         self.loopLevel()
         self.stackSize()
+        self.idealThreadCount()
 
         self.setPriority()
         self.setProperty()
         self.setObjectName()
 
         self.tr()
+
+        self.dumpObjectInfo()
+        self.dumpObjectTree()
 
         # CONTROL --------------------
         self.run()
@@ -86,6 +95,8 @@ class ThreadItem(QThread):
 
         self.wait()
 
+        self.killTimer()
+
         self.disconnect()
         self.deleteLater()
         self.terminate()
@@ -93,7 +104,6 @@ class ThreadItem(QThread):
         self.exit(100)
 
         # WTF --------------------
-        self.thread()
 
 
 # =====================================================================================================================
