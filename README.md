@@ -6,6 +6,8 @@ Manage spawned threads
 ## DESCRIPTION_LONG
 designed to working with spawned threads
 
+note: maybe you dont need use it if you need only one class method - use direct qthread
+
 
 ## Features
 1. use different managers for different funcs/methods if needed  
