@@ -28,7 +28,9 @@ class PROJECT:
     # add DOUBLE SPACE at the end of all lines! for correct representation in MD-viewers
     DESCRIPTION_LONG: str = """
 Designed to working with spawned threads
-    """
+
+NOTE: maybe you dont need use it if you need only one class method - use direct QThread
+"""
     FEATURES: List[str] = [
         # "feat1",
         # ["feat2", "block1", "block2"],
