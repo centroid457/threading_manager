@@ -4,6 +4,9 @@
 ## TODO
 1. add SERIAL execution as method wait_all_piped! paired up with wait_all_parallel()  
 2. add meta cumulative funks  
+3. add GROUP threads - in decorator+wait+...  
+4. maybe AUTO CLEAR if decorator get new funcName?  
+5. TIME item+group  
 
 ********************************************************************************
 ## FIXME
@@ -11,6 +14,11 @@
 
 ********************************************************************************
 ## NEWS
+
+0.0.9 (2024/05/23 09:11:32)
+------------------------------
+- [__INIT__.py] fix import  
+- apply last pypi template  
 
 0.0.8 (2024/01/14 06:38:58)
 ------------------------------
@@ -44,6 +52,5 @@
 0.0.1 (2023-10-03)
 -------------------
 - first working release!
-
 
 ********************************************************************************

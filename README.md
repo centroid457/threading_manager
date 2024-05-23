@@ -1,12 +1,12 @@
-# threading_manager (v0.0.8)
+# threading_manager (v0.0.9)
 
 ## DESCRIPTION_SHORT
-Manage spawned threads
+manage spawned threads
 
 ## DESCRIPTION_LONG
-designed to working with spawned threads
+Designed to working with spawned threads
 
-note: maybe you dont need use it if you need only one class method - use direct qthread
+    NOTE: maybe you dont need use it if you need only one class method - use direct QThread
 
 
 ## Features
@@ -14,7 +14,7 @@ note: maybe you dont need use it if you need only one class method - use direct 
 2. use just one decorator to spawn threads from func / methods  
 3. keep all spawned threads in list by ThreadItem objects  
 4. ThreadItem keeps result/exx/is_alive attributes!  
-5. use wait_all()  
+5. use wait_all/terminate_all()  
 
 
 ********************************************************************************
@@ -46,6 +46,7 @@ See tests and sourcecode for other examples.
 ### 1. example1.py
 ```python
 from threading_manager import *
+import time
 
 count = 5
 time_start = time.time()
