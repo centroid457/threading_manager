@@ -2,7 +2,6 @@
 # useful to start smth without pytest and not to run in main script!
 
 import time
-
 from object_info import ObjectInfo
 
 from threading_manager import *

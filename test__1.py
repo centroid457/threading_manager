@@ -13,7 +13,7 @@ from threading_manager import *
 
 
 # =====================================================================================================================
-class Test_ThreadItem:
+class Test__ThreadItem:
     # -----------------------------------------------------------------------------------------------------------------
     def setup_method(self, method):
         # self.victim = ThreadItem()
@@ -33,7 +33,7 @@ class Test_ThreadItem:
 
 
 # =====================================================================================================================
-class Test_Manager:
+class Test__Manager:
     # VICTIM: Type[ThreadsManager] = type("VICTIM", (ThreadsManager,), {})
 
     def test__singleton(self):
