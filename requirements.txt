@@ -6,16 +6,9 @@
 
 # COMMON ===================
 pytest
-requirements-checker
-object-info
-funcs-aux
-logger-aux
 
 # ========================================
 # SPECIAL FOR THIS PROJECT - ROOT --------
-pydantic
-singleton_meta
-PyQt5
 
 # NESTED ---------------------------------
 

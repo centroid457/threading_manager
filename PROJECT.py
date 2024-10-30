@@ -35,29 +35,17 @@ class PROJECT:
     FEATURES: List[str] = [
         # "feat1",
         # ["feat2", "block1", "block2"],
-
-        "use different managers for different funcs/methods if needed",
-        "use just one decorator to spawn threads from func / methods",
-        "keep all spawned threads in list by ThreadItem objects",
-        "ThreadItem keeps result/exx/is_alive attributes!",
-        "use wait_all/terminate_all()",
     ]
 
     # HISTORY -----------------------------------------------
-    VERSION: Tuple[int, int, int] = (0, 0, 9)
+    VERSION: Tuple[int, int, int] = (0, 0, 10)
     TODO: List[str] = [
-        "add SERIAL execution as method wait_all_piped! paired up with wait_all_parallel()",
-        "add meta cumulative funks",
-        "add GROUP threads - in decorator+wait+...",
-        "maybe AUTO CLEAR if decorator get new funcName?",
-        "TIME item+group",
     ]
     FIXME: List[str] = [
         "..."
     ]
     NEWS: List[str] = [
-        "[__INIT__.py] fix import",
-        "apply last pypi template",
+        "moved into BASE_AUX",
     ]
 
     # FINALIZE -----------------------------------------------
